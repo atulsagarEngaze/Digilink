@@ -7,8 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-<a href="/admin/">Admin</a>
-<a href="/doctor/">Doctor</a>
-<a href="/patient/">Patient</a>
+<a href="${pageContext.request.contextPath}/admin/">Admin</a>
+<a href="${pageContext.request.contextPath}/doctor/">Doctor</a>
+<a href="${pageContext.request.contextPath}/patient/">Patient</a>
 </body>
 </html>

@@ -57,7 +57,9 @@ function  verify_otp_valid(){
             <h1>My Hospitals</h1>
             <ul>
                 <li>
-                   <a href="http://ec2-18-223-25-107.us-east-2.compute.amazonaws.com/web/doctorsList.html">Doctor Appointments</a>
+                   <!-- <a href="http://ec2-18-223-25-107.us-east-2.compute.amazonaws.com/web/doctorsList.html">Doctor Appointments</a> -->
+                   <a href="${pageContext.request.contextPath}/patient/getCity">Doctor Appointments</a>
+                   
                 </li>
                 <li>
                     <a href="#">Lab Tests</a>

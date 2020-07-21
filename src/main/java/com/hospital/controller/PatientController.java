@@ -1,15 +1,21 @@
 package com.hospital.controller;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
@@ -20,14 +26,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.hospital.jpa.AddressRepository;
+import com.hospital.jpa.CityRepository;
+import com.hospital.jpa.DoctorRepository;
 import com.hospital.jpa.PatientRepository;
+import com.hospital.jpa.ServiceMasterSpecialityRepository;
+import com.hospital.model.CityMaster;
+import com.hospital.model.Doctor;
 import com.hospital.model.Patient;
+import com.hospital.model.ServiceMasterSpeciality;
 import com.hospital.util.HospitalUtil;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 @Controller
 @RequestMapping("/patient")
 public class PatientController {
@@ -36,6 +51,15 @@ public class PatientController {
 
 	@Autowired
 	AddressRepository addressRepository;
+	
+	@Autowired
+	DoctorRepository doctorRepository;
+	
+	@Autowired
+	CityRepository cityRepository;
+	
+	@Autowired
+	private ServiceMasterSpecialityRepository serviceMasterSpecialityRepository;
 	
 	@Autowired
 	private JavaMailSender javaMailSender;
@@ -437,4 +461,53 @@ public class PatientController {
 
     }
 	
+	@GetMapping("/getCity")
+	public String getCityList(HttpServletRequest req, Model m) {
+		System.out.println("path=/admin/profile");
+		List<CityMaster> cityList = cityRepository.findAll(Sort.by(Sort.Direction.ASC, "cityName"));
+		/*List specialityList = serviceMasterSpecialityRepository.findAll(Sort.by(Sort.Direction.ASC, "serviceName"));*/
+		/*m.addAttribute("servicemasterList", specialityList);*/
+		m.addAttribute("cityList", cityList);
+		return "demoSearchList";
+	}
+	
+	@GetMapping("/searchBySpeciality")
+	public ResponseEntity<String> searchBySpeciality(@RequestParam("q") final String input) {
+		System.out.println("path=/admin/profile");
+		List<String> searchSpeciality = new ArrayList<String>();
+		ObjectMapper mapper = new ObjectMapper();
+		String resp = "";
+		List<ServiceMasterSpeciality> specialityList = serviceMasterSpecialityRepository.findAll(Sort.by(Sort.Direction.ASC, "serviceName"));
+		for(ServiceMasterSpeciality serviceMasterSpeciality:specialityList ) {
+			if(serviceMasterSpeciality.getServiceName().contains(input)) {
+				searchSpeciality.add(serviceMasterSpeciality.getServiceName());
+			}
+		}
+		try {
+			resp = mapper.writeValueAsString(searchSpeciality);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<String>(resp, HttpStatus.OK);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getDoctorList/{city}", method = RequestMethod.GET)
+	public  String getDoctorsListByCity(@PathVariable("city") String city) {
+		System.out.println("path=/admin/getDoctorList");
+		Gson gson=new Gson();
+		List<Doctor> doctorList = doctorRepository.findByCity(city);
+		return gson.toJson(doctorList);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/getDoctorsData/{citySpecialist}", method = RequestMethod.GET)
+	public  String getDoctorsData(@PathVariable("citySpecialist") String citySpecialist) {
+		System.out.println("path=/admin/getDoctorsData");
+		System.out.println("queryData: "+citySpecialist);
+		String[] splitData=citySpecialist.split("&");
+		Gson gson=new Gson();
+		List<Doctor> doctorList = doctorRepository.findByCity(splitData[0]);
+		return gson.toJson(doctorList);
+	}
 }

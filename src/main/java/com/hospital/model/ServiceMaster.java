@@ -32,7 +32,4 @@ public class ServiceMaster implements Serializable{
 	public void setService(String service) {
 		this.service = service;
 	}
-
-	
-
 }

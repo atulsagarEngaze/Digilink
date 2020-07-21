@@ -32,7 +32,4 @@ public class Master implements Serializable{
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	} 
-	
-	
-
 }

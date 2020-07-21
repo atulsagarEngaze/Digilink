@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name="doctor")
 public class Doctor implements Serializable{
-	
-	
 	/**
 	 * 
 	 */

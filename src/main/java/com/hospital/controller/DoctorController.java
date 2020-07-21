@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.hospital.jpa.AddressRepository;
 import com.hospital.jpa.DoctorRepository;
 import com.hospital.jpa.MasterRepository;
 import com.hospital.jpa.ServiceMasterRepository;
@@ -50,9 +49,6 @@ public class DoctorController {
 	
 	@Autowired
 	private MasterRepository masterRepository;
-	
-	@Autowired
-	AddressRepository addressRepository;
 	
 	@Value("${hospital.url}")
 	private String hospitalUrl;
